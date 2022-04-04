@@ -10,16 +10,19 @@ public class MovieManager : MonoBehaviour
     [SerializeField] private new Camera camera;
     [SerializeField] private VideoPlayer videoPlayer;
     [SerializeField] private RawImage rawImage;
-    [SerializeField] private StatusManager statusManager;
     [SerializeField] float intervalTime = 3f;
     [SerializeField] private VideoClip[] normalVideoClips;
     [SerializeField] private VideoClip[] specialVideoClips;
+
+    private StatusManager statusManager;
     private int nowPlayingClipNum = 0;
     private Coroutine changeToNormalMovieCoroutine;
 
 
     private void Awake()
     {
+        statusManager = GetComponent<StatusManager>();
+
         videoPlayer.isLooping = true;
         videoPlayer.clip = normalVideoClips[nowPlayingClipNum];
         videoPlayer.loopPointReached += FinishPlayingVideo;
@@ -40,6 +43,12 @@ public class MovieManager : MonoBehaviour
     // “Á•Ê‰f‘œ‚ÖØ‚è‘Ö‚¦‚éB
     public void ChangeToSpecialMovie(int speialMovieNum)
     {
+        // Šù‚É“Á•Ê‰f‘œÄ¶’† or ‘JˆÚ’†‚Å‚ ‚ê‚Î‰½‚à‚µ‚È‚¢B
+        if (statusManager.currentStatus == StatusManager.Status.SpecialPlaying || statusManager.currentStatus == StatusManager.Status.SpecialFadeOut)
+        {
+            return;
+        }
+
         if (statusManager.currentStatus == StatusManager.Status.NormalInterval)
         {
             try

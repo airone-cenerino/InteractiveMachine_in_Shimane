@@ -9,10 +9,11 @@ public class WebCameraManager : MonoBehaviour
     [System.Serializable]
     public class DetectRectInfo
     {
-        public float x;
-        public float y;
-        public float width;
-        public float height;
+        public int x;
+        public int y;
+        public int width;
+        public int height;
+        public int areaNum;
     }
 
 
@@ -27,14 +28,22 @@ public class WebCameraManager : MonoBehaviour
 
     private WebCamTexture webcamTexture;
     private float lastShootTime = 0f;
+    private Dictionary<int, List<float>> areaNum2LastColorDict = new Dictionary<int, List<float>>();
 
 
     private void Start()
     {
+        // カメラの名前確認用。
+        WebCamDevice[] devices = WebCamTexture.devices;
+        foreach (WebCamDevice device in devices)
+        {
+            Debug.Log(device.name);
+        }
+
+
         webcamTexture = new WebCamTexture(webCamName, CAMERA_WIDTH, CAMERA_HEIGHT, CAMERA_FPS);
         display.texture = webcamTexture;
         webcamTexture.Play();
-
 
 
         foreach(DetectRectInfo rectInfo in detectRects)
@@ -42,6 +51,8 @@ public class WebCameraManager : MonoBehaviour
             RectTransform rectTransform = GameObject.Instantiate(detectAreaPanel, canvas.transform).GetComponent<RectTransform>();
             rectTransform.anchoredPosition = new Vector2(rectInfo.x, -rectInfo.y);
             rectTransform.sizeDelta = new Vector2(rectInfo.width, rectInfo.height);
+
+            areaNum2LastColorDict[rectInfo.areaNum] = new List<float>() { 0f, 0f, 0f};
         }
     }
 
@@ -50,7 +61,38 @@ public class WebCameraManager : MonoBehaviour
     {
         if (Time.time - lastShootTime > 1f / CAMERA_FPS)
         {
-            //Debug.Log(webcamTextures[0].GetPixels(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT)[0]);
+            List<Color> pixelColors = new List<Color>(webcamTexture.GetPixels(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT));  // 画像取得。
+
+            // 対象範囲毎に平均色を確認。
+            foreach (DetectRectInfo rectInfo in detectRects)
+            {
+                List<Color> targetPixels = new List<Color>();
+
+                for (int height = (int)(rectInfo.y - rectInfo.height / 2); height < (int)(rectInfo.y + rectInfo.height / 2); height++)
+                {
+                    targetPixels.AddRange(pixelColors.GetRange((int)((CAMERA_HEIGHT - height - 1) * CAMERA_WIDTH + rectInfo.x - rectInfo.width / 2), rectInfo.width));
+                }
+
+
+                float sumR = 0f, sumG = 0f, sumB = 0f;
+                foreach(Color pixel in targetPixels)
+                {
+                    sumR += pixel.r;
+                    sumG += pixel.g;
+                    sumB += pixel.b;
+                }
+
+                float aveR = sumR / targetPixels.Count, aveG = sumG / targetPixels.Count, aveB = sumB / targetPixels.Count;
+
+                areaNum2LastColorDict[rectInfo.areaNum][0] = aveR;
+                areaNum2LastColorDict[rectInfo.areaNum][1] = aveG;
+                areaNum2LastColorDict[rectInfo.areaNum][2] = aveB;
+
+
+                Debug.Log(webCamName + " AreaNum:" + rectInfo.areaNum + " 平均RGB:" + aveR.ToString("f2") + " " + aveG.ToString("f2") + " " + aveB.ToString("f2"));
+            }
+
+
             lastShootTime = Time.time;
         }
     }
