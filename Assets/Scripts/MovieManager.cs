@@ -7,124 +7,124 @@ using UnityEngine.UI;
 
 public class MovieManager : MonoBehaviour
 {
-    [SerializeField] private new Camera camera;
-    [SerializeField] private VideoPlayer videoPlayer;
-    [SerializeField] private RawImage rawImage;
-    [SerializeField] float intervalTime = 3f;
-    [SerializeField] private VideoClip[] normalVideoClips;
-    [SerializeField] private VideoClip[] specialVideoClips;
+	[SerializeField] private new Camera camera;
+	[SerializeField] private VideoPlayer videoPlayer;
+	[SerializeField] private RawImage rawImage;
+	[SerializeField] float intervalTime = 3f;
+	[SerializeField] private VideoClip[] normalVideoClips;
+	[SerializeField] private VideoClip[] specialVideoClips;
 
-    private StatusManager statusManager;
-    private int nowPlayingClipNum = 0;
-    private Coroutine changeToNormalMovieCoroutine;
-
-
-    private void Awake()
-    {
-        statusManager = GetComponent<StatusManager>();
-
-        videoPlayer.isLooping = true;
-        videoPlayer.clip = normalVideoClips[nowPlayingClipNum];
-        videoPlayer.loopPointReached += FinishPlayingVideo;
-    }
+	private StatusManager statusManager;
+	private int nowPlayingClipNum = 0;
+	private Coroutine changeToNormalMovieCoroutine;
 
 
-    // Ä¶‚ªI—¹‚µ‚½Û‚ÉŒÄ‚Î‚ê‚éB
-    public void FinishPlayingVideo(VideoPlayer vp)
-    {
-        // “Á•Ê‰f‘œ‚Ö‚Ì‘JˆÚ’†‚É‰f‘œ‚ªI—¹‚µ‚Ä‚àAŸ‚Ì’Êí‰f‘œ‚Ö‚ÍˆÚs‚µ‚È‚¢B
-        if (statusManager.currentStatus != StatusManager.Status.SpecialFadeOut)
-        {
-            changeToNormalMovieCoroutine = StartCoroutine(ChangeToNormalMovieCoroutine());
-        }
-    }
+	private void Awake()
+	{
+		statusManager = GetComponent<StatusManager>();
+
+		videoPlayer.isLooping = true;
+		videoPlayer.clip = normalVideoClips[nowPlayingClipNum];
+		videoPlayer.loopPointReached += FinishPlayingVideo;
+	}
 
 
-    // “Á•Ê‰f‘œ‚ÖØ‚è‘Ö‚¦‚éB
-    public void ChangeToSpecialMovie(int speialMovieNum)
-    {
-        // Šù‚É“Á•Ê‰f‘œÄ¶’† or ‘JˆÚ’†‚Å‚ ‚ê‚Î‰½‚à‚µ‚È‚¢B
-        if (statusManager.currentStatus == StatusManager.Status.SpecialPlaying || statusManager.currentStatus == StatusManager.Status.SpecialFadeOut)
-        {
-            return;
-        }
-
-        if (statusManager.currentStatus == StatusManager.Status.NormalInterval)
-        {
-            try
-            {
-                StopCoroutine(changeToNormalMovieCoroutine);    // ƒCƒ“ƒ^[ƒoƒ‹’†’f—p
-            }
-            catch (System.NullReferenceException e) { }
-
-            StartCoroutine(ChangeToSpecialMovieCoroutine(speialMovieNum, false));
-        }
-        else
-        {
-            StartCoroutine(ChangeToSpecialMovieCoroutine(speialMovieNum, true));
-        }
-    }
+	// å†ç”ŸãŒçµ‚äº†ã—ãŸéš›ã«å‘¼ã°ã‚Œã‚‹ã€‚
+	public void FinishPlayingVideo(VideoPlayer vp)
+	{
+		// ç‰¹åˆ¥æ˜ åƒã¸ã®é·ç§»ä¸­ã«æ˜ åƒãŒçµ‚äº†ã—ã¦ã‚‚ã€æ¬¡ã®é€šå¸¸æ˜ åƒã¸ã¯ç§»è¡Œã—ãªã„ã€‚
+		if (statusManager.currentStatus != StatusManager.Status.SpecialFadeOut)
+		{
+			changeToNormalMovieCoroutine = StartCoroutine(ChangeToNormalMovieCoroutine());
+		}
+	}
 
 
-    // ’Êí‰f‘œØ‚è‘Ö‚¦—pƒRƒ‹[ƒ`ƒ“B
-    private IEnumerator ChangeToNormalMovieCoroutine()
-    {
-        statusManager.ChangeStatus(StatusManager.Status.NormalInterval);
-        videoPlayer.gameObject.SetActive(false);    // ”’‰æ–Ê‚É‚·‚éB
+	// ç‰¹åˆ¥æ˜ åƒã¸åˆ‡ã‚Šæ›¿ãˆã‚‹ã€‚
+	public void ChangeToSpecialMovie(int speialMovieNum)
+	{
+		// æ—¢ã«ç‰¹åˆ¥æ˜ åƒå†ç”Ÿä¸­ or é·ç§»ä¸­ã§ã‚ã‚Œã°ä½•ã‚‚ã—ãªã„ã€‚
+		if (statusManager.currentStatus == StatusManager.Status.SpecialPlaying || statusManager.currentStatus == StatusManager.Status.SpecialFadeOut)
+		{
+			return;
+		}
 
-        // ˆê’èŠÔ‘Ò‚ÂB
-        yield return new WaitForSeconds(intervalTime);
+		if (statusManager.currentStatus == StatusManager.Status.NormalInterval)
+		{
+			try
+			{
+				StopCoroutine(changeToNormalMovieCoroutine);    // ã‚¤ãƒ³ã‚¿ãƒ¼ãƒãƒ«ä¸­æ–­ç”¨
+			}
+			catch (System.NullReferenceException e) { }
 
-        videoPlayer.gameObject.SetActive(true);
-
-        // Ÿ‚Ì’Êí‰f‘œ‚ÉØ‚è‘Ö‚¦B
-        nowPlayingClipNum++;
-        if (nowPlayingClipNum >= normalVideoClips.Length)
-            nowPlayingClipNum = 0;
-        videoPlayer.clip = normalVideoClips[nowPlayingClipNum];
-
-        statusManager.ChangeStatus(StatusManager.Status.NormalPlaying);
-    }
+			StartCoroutine(ChangeToSpecialMovieCoroutine(speialMovieNum, false));
+		}
+		else
+		{
+			StartCoroutine(ChangeToSpecialMovieCoroutine(speialMovieNum, true));
+		}
+	}
 
 
-    // “Á•Ê‰f‘œØ‚è‘Ö‚¦—pƒRƒ‹[ƒ`ƒ“B
-    private IEnumerator ChangeToSpecialMovieCoroutine(int speialMovieNum, bool isPlaying)
-    {
-        statusManager.ChangeStatus(StatusManager.Status.SpecialFadeOut);
+	// é€šå¸¸æ˜ åƒåˆ‡ã‚Šæ›¿ãˆç”¨ã‚³ãƒ«ãƒ¼ãƒãƒ³ã€‚
+	private IEnumerator ChangeToNormalMovieCoroutine()
+	{
+		statusManager.ChangeStatus(StatusManager.Status.NormalInterval);
+		videoPlayer.gameObject.SetActive(false);    // ç™½ç”»é¢ã«ã™ã‚‹ã€‚
 
-        // ƒtƒF[ƒhƒAƒEƒg
-        videoPlayer.isLooping = false;
-        if (isPlaying)
-        {
-            // Ä¶’†‚Ì‚ÍrawImage‚ÅˆÃ‚­‚·‚éB
-            while (rawImage.color.r > 0f)
-            {
-                yield return null;
-                rawImage.color = new Color(rawImage.color.r - Time.deltaTime, rawImage.color.g - Time.deltaTime, rawImage.color.b - Time.deltaTime);
-                videoPlayer.SetDirectAudioVolume(0, videoPlayer.GetDirectAudioVolume(0) - Time.deltaTime);
-            }
+		// ä¸€å®šæ™‚é–“å¾…ã¤ã€‚
+		yield return new WaitForSeconds(intervalTime);
 
-            yield return new WaitForSeconds(1f);
-            rawImage.color = new Color(1f, 1f, 1f);
-        }
-        else
-        {
-            // ƒCƒ“ƒ^[ƒoƒ‹‚Ì‚ÍƒJƒƒ‰‚Ì”wŒiF‚ÅˆÃ‚­‚·‚éB
-            while (camera.backgroundColor.r > 0f)
-            {
-                yield return null;
-                camera.backgroundColor = new Color(camera.backgroundColor.r - Time.deltaTime, camera.backgroundColor.g - Time.deltaTime, camera.backgroundColor.b - Time.deltaTime);
-                videoPlayer.SetDirectAudioVolume(0, videoPlayer.GetDirectAudioVolume(0) - Time.deltaTime);
-            }
+		videoPlayer.gameObject.SetActive(true);
 
-            yield return new WaitForSeconds(1f);
-            Camera.main.backgroundColor = new Color(1f, 1f, 1f);
-            videoPlayer.gameObject.SetActive(true);
-        }
+		// æ¬¡ã®é€šå¸¸æ˜ åƒã«åˆ‡ã‚Šæ›¿ãˆã€‚
+		nowPlayingClipNum++;
+		if (nowPlayingClipNum >= normalVideoClips.Length)
+			nowPlayingClipNum = 0;
+		videoPlayer.clip = normalVideoClips[nowPlayingClipNum];
 
-        videoPlayer.isLooping = true;
-        videoPlayer.SetDirectAudioVolume(0, 1f);
-        videoPlayer.clip = specialVideoClips[speialMovieNum];
-        statusManager.ChangeStatus(StatusManager.Status.SpecialPlaying);
-    }
+		statusManager.ChangeStatus(StatusManager.Status.NormalPlaying);
+	}
+
+
+	// ç‰¹åˆ¥æ˜ åƒåˆ‡ã‚Šæ›¿ãˆç”¨ã‚³ãƒ«ãƒ¼ãƒãƒ³ã€‚
+	private IEnumerator ChangeToSpecialMovieCoroutine(int speialMovieNum, bool isPlaying)
+	{
+		statusManager.ChangeStatus(StatusManager.Status.SpecialFadeOut);
+
+		// ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆ
+		videoPlayer.isLooping = false;
+		if (isPlaying)
+		{
+			// å†ç”Ÿä¸­ã®æ™‚ã¯rawImageã§æš—ãã™ã‚‹ã€‚
+			while (rawImage.color.r > 0f)
+			{
+				yield return null;
+				rawImage.color = new Color(rawImage.color.r - Time.deltaTime, rawImage.color.g - Time.deltaTime, rawImage.color.b - Time.deltaTime);
+				videoPlayer.SetDirectAudioVolume(0, videoPlayer.GetDirectAudioVolume(0) - Time.deltaTime);
+			}
+
+			yield return new WaitForSeconds(1f);
+			rawImage.color = new Color(1f, 1f, 1f);
+		}
+		else
+		{
+			// ã‚¤ãƒ³ã‚¿ãƒ¼ãƒãƒ«ã®æ™‚ã¯ã‚«ãƒ¡ãƒ©ã®èƒŒæ™¯è‰²ã§æš—ãã™ã‚‹ã€‚
+			while (camera.backgroundColor.r > 0f)
+			{
+				yield return null;
+				camera.backgroundColor = new Color(camera.backgroundColor.r - Time.deltaTime, camera.backgroundColor.g - Time.deltaTime, camera.backgroundColor.b - Time.deltaTime);
+				videoPlayer.SetDirectAudioVolume(0, videoPlayer.GetDirectAudioVolume(0) - Time.deltaTime);
+			}
+
+			yield return new WaitForSeconds(1f);
+			Camera.main.backgroundColor = new Color(1f, 1f, 1f);
+			videoPlayer.gameObject.SetActive(true);
+		}
+
+		videoPlayer.isLooping = true;
+		videoPlayer.SetDirectAudioVolume(0, 1f);
+		videoPlayer.clip = specialVideoClips[speialMovieNum];
+		statusManager.ChangeStatus(StatusManager.Status.SpecialPlaying);
+	}
 }

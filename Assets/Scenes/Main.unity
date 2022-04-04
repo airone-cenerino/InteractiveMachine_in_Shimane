@@ -392,13 +392,15 @@ MonoBehaviour:
   display: {fileID: 403284407}
   detectAreaPanel: {fileID: 2365230862021750274, guid: c9f119cba6a24914ea0d7ccefa727a01, type: 3}
   canvas: {fileID: 1890194757}
+  movieManager: {fileID: 1562926446}
   webCamName: Surface Camera Rear
+  detectThreshold: 0.1
   detectRects:
   - x: 500
     y: 500
     width: 500
     height: 500
-    areaNum: 5
+    areaNum: 4
 --- !u!1 &674617272
 GameObject:
   m_ObjectHideFlags: 0
@@ -1344,28 +1346,30 @@ MonoBehaviour:
   display: {fileID: 850092833}
   detectAreaPanel: {fileID: 2365230862021750274, guid: c9f119cba6a24914ea0d7ccefa727a01, type: 3}
   canvas: {fileID: 886786726}
+  movieManager: {fileID: 1562926446}
   webCamName: Surface Camera Front
+  detectThreshold: 0.1
   detectRects:
   - x: 100
     y: 100
     width: 200
     height: 200
-    areaNum: 1
+    areaNum: 0
   - x: 1820
     y: 100
     width: 200
     height: 200
-    areaNum: 2
+    areaNum: 1
   - x: 100
     y: 980
     width: 200
     height: 200
-    areaNum: 3
+    areaNum: 2
   - x: 1820
     y: 980
     width: 200
     height: 200
-    areaNum: 4
+    areaNum: 3
 --- !u!1 &2064209692
 GameObject:
   m_ObjectHideFlags: 0

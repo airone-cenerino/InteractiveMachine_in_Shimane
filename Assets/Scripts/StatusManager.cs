@@ -5,17 +5,17 @@ using UnityEngine;
 
 public class StatusManager : MonoBehaviour
 {
-    [HideInInspector] public enum Status { NormalPlaying, NormalInterval, SpecialPlaying, SpecialFadeOut};
+	[HideInInspector] public enum Status { NormalPlaying, NormalInterval, SpecialPlaying, SpecialFadeOut};
 
-    public Status currentStatus { get; private set; } = Status.NormalPlaying;
-    public Status lastStatus { get; private set; } = Status.NormalPlaying;
+	public Status currentStatus { get; private set; } = Status.NormalPlaying;
+	public Status lastStatus { get; private set; } = Status.NormalPlaying;
 
 
-    // ÉXÉeÅ[É^ÉXçXêVÅB
-    public void ChangeStatus(Status newStatus)
-    {
-        lastStatus = currentStatus;
-        currentStatus = newStatus;
-        Debug.Log(currentStatus);
-    }
+	// „Çπ„ÉÜ„Éº„Çø„ÇπÊõ¥Êñ∞„ÄÇ
+	public void ChangeStatus(Status newStatus)
+	{
+		lastStatus = currentStatus;
+		currentStatus = newStatus;
+		Debug.Log(currentStatus);
+	}
 }
