@@ -7,8 +7,8 @@ using UnityEngine.UI;
 
 public class MovieManager : MonoBehaviour
 {
-	[SerializeField] private new Camera camera;
 	[SerializeField] private VideoPlayer videoPlayer;
+	[SerializeField] private RawImage rawImageForFadeOut;
 	[SerializeField] private RawImage rawImage;
 	[SerializeField] float intervalTime = 3f;
 	[SerializeField] private VideoClip[] normalVideoClips;
@@ -70,20 +70,26 @@ public class MovieManager : MonoBehaviour
 	private IEnumerator ChangeToNormalMovieCoroutine()
 	{
 		statusManager.ChangeStatus(StatusManager.Status.NormalInterval);
-		videoPlayer.gameObject.SetActive(false);    // 白画面にする。
+		rawImageForFadeOut.color = new Color(1f, 1f, 1f, 1f);   // 白画面にする。
+		videoPlayer.Stop();
+
 
 		// 一定時間待つ。
 		yield return new WaitForSeconds(intervalTime);
 
-		videoPlayer.gameObject.SetActive(true);
 
 		// 次の通常映像に切り替え。
 		nowPlayingClipNum++;
 		if (nowPlayingClipNum >= normalVideoClips.Length)
 			nowPlayingClipNum = 0;
 		videoPlayer.clip = normalVideoClips[nowPlayingClipNum];
+		videoPlayer.Play();
 
 		statusManager.ChangeStatus(StatusManager.Status.NormalPlaying);
+
+		yield return new WaitForSeconds(0.5f);  // 前の動画のキャッシュが消えるのを待つ。
+
+		rawImageForFadeOut.color = new Color(1f, 1f, 1f, 0f);   // 白画面解除。
 	}
 
 
@@ -97,34 +103,25 @@ public class MovieManager : MonoBehaviour
 		if (isPlaying)
 		{
 			// 再生中の時はrawImageで暗くする。
-			while (rawImage.color.r > 0f)
+			while (rawImageForFadeOut.color.a < 1f)
 			{
 				yield return null;
-				rawImage.color = new Color(rawImage.color.r - Time.deltaTime, rawImage.color.g - Time.deltaTime, rawImage.color.b - Time.deltaTime);
+				rawImageForFadeOut.color = new Color(rawImageForFadeOut.color.r, rawImageForFadeOut.color.g, rawImageForFadeOut.color.b, rawImageForFadeOut.color.a + Time.deltaTime);
 				videoPlayer.SetDirectAudioVolume(0, videoPlayer.GetDirectAudioVolume(0) - Time.deltaTime);
 			}
 
 			yield return new WaitForSeconds(1f);
-			rawImage.color = new Color(1f, 1f, 1f);
 		}
-		else
-		{
-			// インターバルの時はカメラの背景色で暗くする。
-			while (camera.backgroundColor.r > 0f)
-			{
-				yield return null;
-				camera.backgroundColor = new Color(camera.backgroundColor.r - Time.deltaTime, camera.backgroundColor.g - Time.deltaTime, camera.backgroundColor.b - Time.deltaTime);
-				videoPlayer.SetDirectAudioVolume(0, videoPlayer.GetDirectAudioVolume(0) - Time.deltaTime);
-			}
 
-			yield return new WaitForSeconds(1f);
-			Camera.main.backgroundColor = new Color(1f, 1f, 1f);
-			videoPlayer.gameObject.SetActive(true);
-		}
 
 		videoPlayer.isLooping = true;
 		videoPlayer.SetDirectAudioVolume(0, 1f);
 		videoPlayer.clip = specialVideoClips[speialMovieNum];
+
 		statusManager.ChangeStatus(StatusManager.Status.SpecialPlaying);
+
+		yield return new WaitForSeconds(0.5f);		// 前の動画のキャッシュが消えるのを待つ。
+
+		rawImageForFadeOut.color = new Color(1f, 1f, 1f, 0f);	// 白画面解除。
 	}
 }
