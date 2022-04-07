@@ -112,6 +112,10 @@ public class MovieManager : MonoBehaviour
 
 			yield return new WaitForSeconds(1f);
 		}
+        else
+        {
+			videoPlayer.Play();
+		}
 
 
 		videoPlayer.isLooping = true;
