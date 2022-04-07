@@ -15,6 +15,7 @@ public class MovieManager : MonoBehaviour
 	[SerializeField] private VideoClip[] specialVideoClips;
 
 	private StatusManager statusManager;
+	private AudioSource audioSource;
 	private int nowPlayingClipNum = 0;
 	private Coroutine changeToNormalMovieCoroutine;
 
@@ -22,6 +23,7 @@ public class MovieManager : MonoBehaviour
 	private void Awake()
 	{
 		statusManager = GetComponent<StatusManager>();
+		audioSource = GetComponent<AudioSource>();
 
 		videoPlayer.isLooping = true;
 		videoPlayer.clip = normalVideoClips[nowPlayingClipNum];
@@ -109,8 +111,6 @@ public class MovieManager : MonoBehaviour
 				rawImageForFadeOut.color = new Color(rawImageForFadeOut.color.r, rawImageForFadeOut.color.g, rawImageForFadeOut.color.b, rawImageForFadeOut.color.a + Time.deltaTime);
 				videoPlayer.SetDirectAudioVolume(0, videoPlayer.GetDirectAudioVolume(0) - Time.deltaTime);
 			}
-
-			yield return new WaitForSeconds(1f);
 		}
         else
         {
@@ -121,6 +121,7 @@ public class MovieManager : MonoBehaviour
 		videoPlayer.isLooping = true;
 		videoPlayer.SetDirectAudioVolume(0, 1f);
 		videoPlayer.clip = specialVideoClips[speialMovieNum];
+		audioSource.Play();
 
 		statusManager.ChangeStatus(StatusManager.Status.SpecialPlaying);
 
