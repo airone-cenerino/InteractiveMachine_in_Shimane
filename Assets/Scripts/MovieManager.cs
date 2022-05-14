@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class MovieManager : MonoBehaviour
 {
+	[SerializeField] private Color intervalColor;
 	[SerializeField] private VideoPlayer videoPlayer;
 	[SerializeField] private RawImage rawImageForFadeOut;
 	[SerializeField] private RawImage rawImage;
@@ -28,6 +29,9 @@ public class MovieManager : MonoBehaviour
 		videoPlayer.isLooping = true;
 		videoPlayer.clip = normalVideoClips[nowPlayingClipNum];
 		videoPlayer.loopPointReached += FinishPlayingVideo;
+
+		// FadeOutの色の初期化。
+		rawImageForFadeOut.color = new Color(intervalColor.r, intervalColor.g, intervalColor.b, 0f);
 	}
 
 
@@ -72,7 +76,7 @@ public class MovieManager : MonoBehaviour
 	private IEnumerator ChangeToNormalMovieCoroutine()
 	{
 		statusManager.ChangeStatus(StatusManager.Status.NormalInterval);
-		rawImageForFadeOut.color = new Color(1f, 1f, 1f, 1f);   // 白画面にする。
+		rawImageForFadeOut.color = new Color(intervalColor.r, intervalColor.g, intervalColor.b, 1f);   // インターバル画面の色にする。
 		videoPlayer.Stop();
 
 
@@ -91,7 +95,7 @@ public class MovieManager : MonoBehaviour
 
 		yield return new WaitForSeconds(0.5f);  // 前の動画のキャッシュが消えるのを待つ。
 
-		rawImageForFadeOut.color = new Color(1f, 1f, 1f, 0f);   // 白画面解除。
+		rawImageForFadeOut.color = new Color(intervalColor.r, intervalColor.g, intervalColor.b, 0f);   // 透明に戻す。
 	}
 
 
@@ -127,6 +131,6 @@ public class MovieManager : MonoBehaviour
 
 		yield return new WaitForSeconds(0.5f);		// 前の動画のキャッシュが消えるのを待つ。
 
-		rawImageForFadeOut.color = new Color(1f, 1f, 1f, 0f);	// 白画面解除。
+		rawImageForFadeOut.color = new Color(intervalColor.r, intervalColor.g, intervalColor.b, 0f);    // 透明に戻す。
 	}
 }

@@ -1243,6 +1243,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef2a18f51a83a45439ec470dfa740ba3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  intervalColor: {r: 1, g: 0.74509805, b: 1, a: 1}
   videoPlayer: {fileID: 1143519056}
   rawImageForFadeOut: {fileID: 739087388}
   rawImage: {fileID: 1143519057}
