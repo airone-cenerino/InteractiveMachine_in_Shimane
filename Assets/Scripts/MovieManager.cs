@@ -11,9 +11,10 @@ public class MovieManager : MonoBehaviour
 	[SerializeField] private VideoPlayer videoPlayer;
 	[SerializeField] private RawImage rawImageForFadeOut;
 	[SerializeField] private RawImage rawImage;
-	[SerializeField] float intervalTime = 3f;
 	[SerializeField] private VideoClip[] normalVideoClips;
 	[SerializeField] private VideoClip[] specialVideoClips;
+	private float intervalTime = 3f;
+
 
 	private StatusManager statusManager;
 	private AudioSource audioSource;
@@ -69,6 +70,13 @@ public class MovieManager : MonoBehaviour
 		{
 			StartCoroutine(ChangeToSpecialMovieCoroutine(speialMovieNum, true));
 		}
+	}
+
+	
+	public void SetIntervalTime(float intervalTime)
+    {
+		this.intervalTime = intervalTime;
+		Debug.Log("Interval Timeを" + intervalTime + "秒に変更します。");
 	}
 
 

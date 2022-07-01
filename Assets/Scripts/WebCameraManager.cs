@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 
 public class WebCameraManager : MonoBehaviour
@@ -33,15 +34,17 @@ public class WebCameraManager : MonoBehaviour
 	private float lastShootTime = 0f;
 	private Dictionary<int, List<float>> areaNum2LastColorDict = new Dictionary<int, List<float>>();
 	private float elapsedTime = 0f;
-
+	
 
 	private void Start()
 	{
+		SceneManager.sceneUnloaded += OnSceneUnloaded;
+
 		// カメラの名前確認用。
 		WebCamDevice[] devices = WebCamTexture.devices;
 		foreach (WebCamDevice device in devices)
 		{
-			Debug.Log(device.name);
+			//Debug.Log(device.name);
 		}
 
 
@@ -101,6 +104,16 @@ public class WebCameraManager : MonoBehaviour
 		}
 
 		elapsedTime += Time.deltaTime;
+	}
+
+
+	// シーン終了時
+	void OnSceneUnloaded(Scene scene)
+	{
+		if (scene.name == "Main")
+		{
+			webcamTexture.Stop();
+		}
 	}
 
 
