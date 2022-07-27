@@ -25,6 +25,8 @@ public class IntervalTimeManager : MonoBehaviour
         }
         instance = this;
         DontDestroyOnLoad(gameObject);
+
+        intervalTime = PlayerPrefs.GetFloat("IntervalTime", intervalTime);
     }
 
 
@@ -54,7 +56,9 @@ public class IntervalTimeManager : MonoBehaviour
     {
         if (scene.name == "SettingScene")
         {
-            intervalTime = inputFieldValueGetter.GetInputValue();   
+            intervalTime = inputFieldValueGetter.GetInputValue();
+            PlayerPrefs.SetFloat("IntervalTime", intervalTime);
+            PlayerPrefs.Save();
         }
     }
 }
